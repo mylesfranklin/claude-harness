@@ -23,14 +23,28 @@ def merge_settings(existing_path: str, output_path: str):
     if "PreToolUse" not in existing["hooks"]:
         existing["hooks"]["PreToolUse"] = []
 
-    # Check if bash validator already exists
+    # Check for existing hooks
     bash_validator_exists = False
+    preflight_exists = False
+
     for hook_config in existing["hooks"]["PreToolUse"]:
-        if hook_config.get("matcher") == "Bash":
-            for h in hook_config.get("hooks", []):
-                if "validate-bash.py" in h.get("command", ""):
-                    bash_validator_exists = True
-                    break
+        matcher = hook_config.get("matcher", "")
+        for h in hook_config.get("hooks", []):
+            cmd = h.get("command", "")
+            if "validate-bash.py" in cmd:
+                bash_validator_exists = True
+            if "pre-flight.py" in cmd:
+                preflight_exists = True
+
+    # Add pre-flight routing hook for all tools (runs first)
+    if not preflight_exists:
+        existing["hooks"]["PreToolUse"].insert(0, {
+            "matcher": "",  # Empty matcher = all tools
+            "hooks": [{
+                "type": "command",
+                "command": "$HOME/.claude/hooks/pre-flight.py"
+            }]
+        })
 
     # Add bash validator if not present
     if not bash_validator_exists:
