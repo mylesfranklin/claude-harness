@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "description": "Skill catalog for Claude Code Harness. Skills are reusable patterns/workflows.",
+  "skills": [],
+  "schema": {
+    "name": "string - unique identifier (kebab-case)",
+    "description": "string - what the skill does",
+    "triggers": "string[] - keywords/phrases that activate this skill",
+    "path": "string - relative path to SKILL.md file",
+    "tools_used": "string[] - tools this skill typically uses",
+    "estimated_tokens": "number - typical token cost",
+    "success_rate": "number - historical success rate (0-1)",
+    "last_used": "string - ISO date of last use"
+  },
+  "example_skill": {
+    "name": "test-driven-development",
+    "description": "Write tests first, then implementation to pass tests",
+    "triggers": ["tdd", "test first", "write tests", "test-driven"],
+    "path": "test-driven-development/SKILL.md",
+    "tools_used": ["Read", "Write", "Edit", "Bash"],
+    "estimated_tokens": 3000,
+    "success_rate": 0.85,
+    "last_used": null
+  }
+}

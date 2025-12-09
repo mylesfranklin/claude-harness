@@ -1,0 +1,99 @@
+{
+  "version": "1.0.0",
+  "description": "Agent roster for Claude Code Harness. Agents are specialized sub-processes for delegated work.",
+  "builtin_agents": [
+    {
+      "name": "Explore",
+      "type": "builtin",
+      "subagent_type": "Explore",
+      "description": "Fast codebase exploration. Finds files, searches code, answers questions about codebase structure.",
+      "use_when": [
+        "Need to understand codebase structure",
+        "Looking for files without knowing exact location",
+        "Open-ended code search",
+        "Finding patterns across multiple files"
+      ],
+      "model": "sonnet",
+      "estimated_tokens": "2000-10000"
+    },
+    {
+      "name": "Plan",
+      "type": "builtin",
+      "subagent_type": "Plan",
+      "description": "Software architect agent. Designs implementation plans, identifies critical files, considers trade-offs.",
+      "use_when": [
+        "Planning implementation strategy",
+        "Designing architecture",
+        "Breaking down complex features",
+        "Identifying dependencies"
+      ],
+      "model": "sonnet",
+      "estimated_tokens": "3000-15000"
+    },
+    {
+      "name": "claude-code-guide",
+      "type": "builtin",
+      "subagent_type": "claude-code-guide",
+      "description": "Documentation expert for Claude Code, Agent SDK, and API. Answers questions about features, usage, configuration.",
+      "use_when": [
+        "Questions about Claude Code features",
+        "How to use hooks, commands, MCP servers",
+        "Claude Agent SDK questions",
+        "API and tool use questions"
+      ],
+      "model": "haiku",
+      "estimated_tokens": "1000-5000"
+    },
+    {
+      "name": "general-purpose",
+      "type": "builtin",
+      "subagent_type": "general-purpose",
+      "description": "General agent for complex multi-step tasks. Has access to all tools.",
+      "use_when": [
+        "Complex multi-step research",
+        "Tasks requiring multiple tool types",
+        "When unsure which agent to use"
+      ],
+      "model": "sonnet",
+      "estimated_tokens": "5000-20000"
+    },
+    {
+      "name": "frontend-taste-architect",
+      "type": "builtin",
+      "subagent_type": "frontend-taste-architect",
+      "description": "Frontend design expert. Reviews UI/UX, evaluates designs, provides aesthetic guidance.",
+      "use_when": [
+        "Designing frontend interfaces",
+        "Reviewing UI implementations",
+        "Choosing design patterns",
+        "Evaluating component libraries"
+      ],
+      "model": "sonnet",
+      "estimated_tokens": "3000-10000"
+    },
+    {
+      "name": "blockchain-architect",
+      "type": "builtin",
+      "subagent_type": "blockchain-architect",
+      "description": "Blockchain and crypto expert. Smart contracts, security analysis, DeFi, ZK proofs.",
+      "use_when": [
+        "Smart contract development",
+        "Blockchain security review",
+        "Tokenomics design",
+        "Cryptographic implementations"
+      ],
+      "model": "sonnet",
+      "estimated_tokens": "5000-15000"
+    }
+  ],
+  "custom_agents": [],
+  "schema": {
+    "name": "string - display name",
+    "type": "string - 'builtin' or 'custom'",
+    "subagent_type": "string - Task tool subagent_type parameter",
+    "description": "string - what the agent does",
+    "use_when": "string[] - scenarios for this agent",
+    "model": "string - preferred model",
+    "estimated_tokens": "string - token range"
+  }
+}
