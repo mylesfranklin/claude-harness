@@ -108,13 +108,44 @@ chmod +x "$DEST_DIR/hooks/"*.py 2>/dev/null || true
 
 # Initialize memory files if they don't exist
 log_info "Initializing memory layer..."
-touch "$DEST_DIR/memory/procedural/skills.jsonl"
 touch "$DEST_DIR/memory/episodic/outcomes/successes.jsonl"
 touch "$DEST_DIR/memory/episodic/outcomes/failures.jsonl"
 
+# Copy memory schema documentation
+if [[ -f "$SRC_DIR/memory/SCHEMA.md" ]]; then
+    cp "$SRC_DIR/memory/SCHEMA.md" "$DEST_DIR/memory/"
+fi
+
+# Initialize procedural memory with seed skills if empty
+SKILLS_FILE="$DEST_DIR/memory/procedural/skills.jsonl"
+if [[ ! -f "$SKILLS_FILE" ]] || [[ ! -s "$SKILLS_FILE" ]]; then
+    log_info "Seeding procedural memory with starter skills..."
+    if [[ -f "$SRC_DIR/memory/procedural/seed-skills.jsonl" ]]; then
+        cp "$SRC_DIR/memory/procedural/seed-skills.jsonl" "$SKILLS_FILE"
+    else
+        touch "$SKILLS_FILE"
+    fi
+fi
+
 # Initialize user profile if it doesn't exist
 if [[ ! -f "$DEST_DIR/memory/semantic/user-profile.json" ]]; then
-    echo '{"version": "1.0", "preferences": {}, "context": {}}' > "$DEST_DIR/memory/semantic/user-profile.json"
+    cat > "$DEST_DIR/memory/semantic/user-profile.json" << 'PROFILE'
+{
+  "version": "1.0",
+  "preferences": {
+    "communication": {
+      "verbosity": "concise",
+      "ask_before_major_changes": true
+    },
+    "code_style": {
+      "indent": "spaces",
+      "indent_size": 2
+    }
+  },
+  "context": {},
+  "learned_preferences": []
+}
+PROFILE
 fi
 
 # Update settings.json with hooks
@@ -140,23 +171,32 @@ echo "$(date -Iseconds)" > "$DEST_DIR/.harness-installed"
 
 log_info "Installation complete!"
 echo ""
-echo "=== Claude Code Harness v1.0 Installed ==="
+echo "=== Claude Code Harness v2.0 Installed ==="
 echo ""
 echo "Installed to: $DEST_DIR"
 echo ""
-echo "Structure:"
-echo "  knowledge/    - Self-knowledge layer (BOOTSTRAP.md, routing, costs)"
-echo "  memory/       - Persistent memory (episodic, semantic, procedural)"
-echo "  hooks/        - Lifecycle hooks (security validation)"
-echo "  scripts/      - Utility scripts"
-echo "  metrics/      - Session metrics (Phase 4)"
+echo "Phase 1 - Self-Knowledge Layer:"
+echo "  knowledge/BOOTSTRAP.md  - Core context (~500 tokens)"
+echo "  knowledge/tools/        - Tool routing decision tree"
+echo "  knowledge/agents/       - Agent roster"
+echo "  knowledge/cost/         - Model cost optimization"
 echo ""
-echo "What happens now:"
-echo "  1. BOOTSTRAP.md provides self-knowledge context"
-echo "  2. validate-bash.py blocks dangerous commands"
-echo "  3. Memory directories ready for Phase 2"
+echo "Phase 2 - Memory Layer:"
+echo "  memory/procedural/      - Voyager-style skill library ($(wc -l < "$DEST_DIR/memory/procedural/skills.jsonl" 2>/dev/null || echo 0) skills)"
+echo "  memory/episodic/        - Session outcomes"
+echo "  memory/semantic/        - User preferences & domain knowledge"
+echo "  memory/working/         - Session context buffer"
 echo ""
-echo "To verify: Start a new Claude Code session and check if"
-echo "the routing rules influence tool selection."
+echo "Hooks Active:"
+echo "  session-start.sh        - Loads context + memory at start"
+echo "  capture-session.py      - Saves learnings at session end"
+echo "  validate-bash.py        - Security guardrail"
 echo ""
+echo "Scripts Available:"
+echo "  memory-retrieval.py     - Query memory by task"
+echo "  update-working-memory.py - Track session progress"
+echo "  context-compression.py  - Compress long sessions"
+echo "  metrics-collector.py    - Session metrics"
+echo ""
+echo "To verify: Start a new Claude Code session."
 echo "To uninstall: ./install.sh --uninstall"
